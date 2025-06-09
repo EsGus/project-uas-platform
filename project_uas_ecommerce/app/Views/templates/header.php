@@ -10,7 +10,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="/">Band Merch</a>
+            <a class="navbar-brand" href="/">Rock Tenage</a>
             <div class="navbar-nav">
                 <?php if (session()->has('user_id')): ?>
                     <?php

@@ -83,12 +83,14 @@ class Order extends BaseController
             return redirect()->to('/cart/payment')->with('error', 'Pembayaran yang sudah selesai tidak dapat dibatalkan.');
         }
 
-        // Restore stock
-        $product = $productModel->find($order['product_id']);
-        if ($product) {
-            $newStock = $product['stock'] + $order['quantity'];
-            $productModel->update($product['id'], ['stock' => $newStock]);
-            log_message('info', 'Stock restored for product ID ' . $product['id'] . '. New stock: ' . $newStock);
+        // Restore stock only if payment was completed
+        if ($order['payment_status'] === 'completed') {
+            $product = $productModel->find($order['product_id']);
+            if ($product) {
+                $newStock = $product['stock'] + $order['quantity'];
+                $productModel->update($product['id'], ['stock' => $newStock]);
+                log_message('info', 'Stock restored for product ID ' . $product['id'] . '. New stock: ' . $newStock);
+            }
         }
 
         // Update order status
@@ -100,9 +102,9 @@ class Order extends BaseController
         $orderModel->update($orderId, $updateData);
         log_message('info', 'Updated order ID ' . $orderId . ' with: ' . json_encode($updateData));
 
-        return redirect()->to('/transactions')->with('success', 'Pembayaran berhasil dibatalkan dan stok telah dikembalikan.');
+        return redirect()->to('/transactions')->with('success', 'Pembayaran berhasil dibatalkan.');
     }
-    
+
     public function deleteTransaction($orderId)
     {
         $orderModel = new OrderModel();
